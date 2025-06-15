@@ -127,6 +127,21 @@ class BarbellPathTracker:
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+        # Read first frame to check if rotation needed
+        ret, first_frame = cap.read()
+        if not ret:
+            return {"status": "error", "message": "Could not read video"}
+        
+        # Reset to beginning
+        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+
+        # If width > height but the actual frame is taller, need to rotate
+        needs_rotation = width > height
+        
+        # Swap dimensions if rotating
+        output_width = height if needs_rotation else width
+        output_height = width if needs_rotation else height
         
         # Create output directory if it doesn't exist
         output_dir = os.path.dirname(output_path)
@@ -134,7 +149,8 @@ class BarbellPathTracker:
             os.makedirs(output_dir)
         
         fourcc = cv2.VideoWriter_fourcc(*'mp4v') # type: ignore
-        out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+        # Use the corrected dimensions here
+        out = cv2.VideoWriter(output_path, fourcc, fps, (output_width, output_height))
         
         positions = deque(maxlen=1000)
         processed_frames = 0
@@ -143,6 +159,11 @@ class BarbellPathTracker:
             ret, frame = cap.read()
             if not ret:
                 break
+            
+            # Rotation
+            if needs_rotation:
+                # Rotate 90 degrees clockwise for portrait videos
+                frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
             
             # Process frame
             frame = self._process_frame(frame, positions)
@@ -159,7 +180,7 @@ class BarbellPathTracker:
             "frames_processed": processed_frames,
             "total_frames": total_frames,
             "fps": fps,
-            "resolution": f"{width}x{height}"
+            "resolution": f"{output_width}x{output_height}"  # Updated to use corrected dimensions
         }
 
 # Usage
@@ -169,7 +190,7 @@ if __name__ == "__main__":
     # For video file
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_filename = f'output/tracked_video_{timestamp}.mp4'
-    input_filename = 'PATH/TO/YOUR/VIDEO'
+    input_filename = ''
     tracker.process_video(video_path=input_filename, save_output=True, output_path=output_filename)
     
     # For webcam
