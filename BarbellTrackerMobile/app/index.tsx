@@ -24,7 +24,7 @@ export default function App() {
   // UPDATE THIS WITH YOUR COMPUTER'S IP ADDRESS!
   const API_URL = "http://YOUR.IP.ADDRESS:8000"; // e.g., 'http://192.168.1.5:8000'
 
-  // Test connection function
+  /* Test API connection function for development
   const testConnection = async () => {
     try {
       console.log("Testing connection to:", API_URL);
@@ -35,7 +35,7 @@ export default function App() {
       console.error("Connection test failed:", error);
       Alert.alert("Connection Failed", `Cannot reach ${API_URL}`);
     }
-  };
+  };*/
 
   const uploadVideo = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -48,7 +48,7 @@ export default function App() {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      mediaTypes: "videos",
       allowsEditing: false,
       quality: 1,
     });
@@ -128,7 +128,15 @@ export default function App() {
 
     try {
       const asset = await MediaLibrary.createAssetAsync(processedVideo);
-      await MediaLibrary.createAlbumAsync("Barbell Tracker", asset, false);
+
+      const albumName = "Barbell Tracker";
+      const album = await MediaLibrary.getAlbumAsync(albumName);
+
+      if (album) {
+        await MediaLibrary.addAssetsToAlbumAsync([asset], album.id, false);
+      } else {
+        await MediaLibrary.createAlbumAsync(albumName, asset, false);
+      }
 
       Alert.alert(
         "Saved!",
@@ -154,9 +162,11 @@ export default function App() {
         <TouchableOpacity style={styles.uploadButton} onPress={uploadVideo}>
           <Text style={styles.uploadButtonText}>UPLOAD</Text>
         </TouchableOpacity>
+
+        {/* Test button for API development and connection
         <TouchableOpacity style={styles.testButton} onPress={testConnection}>
           <Text style={styles.testButtonText}>Test Connection</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     );
   }
@@ -205,14 +215,14 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#121212",
     justifyContent: "center",
     alignItems: "center",
   },
   uploadButton: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 275,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
