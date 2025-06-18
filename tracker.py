@@ -17,6 +17,7 @@ class BarbellPathTracker:
     
     def _process_frame(self, frame, positions):
         """Shared frame processing logic"""
+        
         # Run detection
         results = self.model(frame)
         
@@ -53,7 +54,7 @@ class BarbellPathTracker:
         
     def process_video(self, video_path, save_output=False, output_path='tracked_video.mp4'):
         """
-        Process video and display trajectory in real-time.
+        Process video and display trajectory in real-time - for testing on desktop.
         
         Args:
             video_path: Path to input video (or 0 for webcam)
@@ -117,6 +118,7 @@ class BarbellPathTracker:
     
     def process_video_headless(self, video_path, output_path):
         """Process video without display - for API use"""
+        
         cap = cv2.VideoCapture(video_path)
         
         # Check if video opened successfully
@@ -175,12 +177,14 @@ class BarbellPathTracker:
         out.release()
         
         return {
-            "status": "success",
-            "output_path": output_path,
-            "frames_processed": processed_frames,
-            "total_frames": total_frames,
-            "fps": fps,
-            "resolution": f"{output_width}x{output_height}"  # Updated to use corrected dimensions
+            "success": True,
+            "message": "Processing complete",
+            "video": {
+                "filename": os.path.basename(output_path),
+                "frames": processed_frames,
+                "fps": fps,
+                "resolution": f"{output_width}x{output_height}"
+            }
         }
 
 # Usage
