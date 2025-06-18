@@ -46,3 +46,6 @@ barbell_trajectory*.png
 
 # venv
 venv/
+
+# expo config
+.expo
