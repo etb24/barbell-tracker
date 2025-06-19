@@ -24,6 +24,7 @@ output/
 *.png
 *.jpg
 *.jpeg
+*.gif
 tracked_*.mp4
 barbell_trajectory*.png
 
