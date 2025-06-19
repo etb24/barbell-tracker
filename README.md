@@ -2,7 +2,7 @@
 
 As a former competitive athlete and fitness enthusiast with past injuries I've built a computer vision application that tracks and visualizes barbell movement patterns during weightlifting exercises. Perfect for form analysis, coaching, and performance optimization.
 
-![Demo](demo.gif)
+<img src="demo.gif" height="50%">
 
 ## Features
 
