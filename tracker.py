@@ -53,14 +53,7 @@ class BarbellPathTracker:
         return frame
         
     def process_video(self, video_path, save_output=False, output_path='tracked_video.mp4'):
-        """
-        Process video and display trajectory in real-time - for testing on desktop.
-        
-        Args:
-            video_path: Path to input video (or 0 for webcam)
-            save_output: Whether to save the output video
-            output_path: Path to save output video if save_output=True
-        """
+        """Process video and display trajectory in real-time - for testing on desktop."""
         # Open video
         cap = cv2.VideoCapture(video_path)
         
@@ -90,17 +83,15 @@ class BarbellPathTracker:
             if not ret:
                 break
             
-            # Process frame
+            # Process and display frame
             frame = self._process_frame(frame, positions)
-            
-            # Display frame
             cv2.imshow('Barbell Tracking', frame)
             
             # Save frame if recording
             if save_output and out is not None:
                 out.write(frame)
             
-            # Handle key presses
+            # Handle key presses (GUI)
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
@@ -140,8 +131,6 @@ class BarbellPathTracker:
 
         # If width > height but the actual frame is taller, need to rotate
         needs_rotation = width > height
-        
-        # Swap dimensions if rotating
         output_width = height if needs_rotation else width
         output_height = width if needs_rotation else height
         
@@ -151,7 +140,6 @@ class BarbellPathTracker:
             os.makedirs(output_dir)
         
         fourcc = cv2.VideoWriter_fourcc(*'mp4v') # type: ignore
-        # Use the corrected dimensions here
         out = cv2.VideoWriter(output_path, fourcc, fps, (output_width, output_height))
         
         positions = deque(maxlen=1000)

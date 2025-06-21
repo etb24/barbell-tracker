@@ -35,6 +35,8 @@ export default function App() {
   const [processedVideo, setProcessedVideo] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [savedVideos, setSavedVideos] = useState<SavedVideo[]>([]);
+  const [currentVideo, setCurrentVideo] = useState<string | null>(null);
+  const [isFromLibrary, setIsFromLibrary] = useState(false);
 
   // UPDATE THIS WITH YOUR COMPUTER'S IP ADDRESS!
   const API_URL = "http://YOUR.IP.ADDRESS:8000"; // e.g., 'http://192.168.1.5:8000'
@@ -54,6 +56,12 @@ export default function App() {
     } catch (error) {
       console.error("Failed to load saved videos:", error);
     }
+  };
+
+  // Play video
+  const playVideo = (uri: string, fromLibrary = false) => {
+    setCurrentVideo(uri);
+    setIsFromLibrary(fromLibrary);
   };
 
   // Save video to library
@@ -202,7 +210,8 @@ export default function App() {
               encoding: FileSystem.EncodingType.Base64,
             });
 
-            setProcessedVideo(fileUri);
+            playVideo(fileUri, false);
+            setProcessedVideo(fileUri); //come back to this
             setSelectedVideo(null);
           } else {
             throw new Error("Failed to convert video to base64");
@@ -239,7 +248,7 @@ export default function App() {
   };
 
   const saveVideo = async () => {
-    if (!processedVideo) return;
+    if (!currentVideo) return;
 
     const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status !== "granted") {
@@ -251,7 +260,7 @@ export default function App() {
     }
 
     try {
-      const asset = await MediaLibrary.createAssetAsync(processedVideo);
+      const asset = await MediaLibrary.createAssetAsync(currentVideo);
 
       const albumName = "Barbell Tracker";
       const album = await MediaLibrary.getAlbumAsync(albumName);
@@ -276,6 +285,8 @@ export default function App() {
   const discardVideo = () => {
     setProcessedVideo(null);
     setSelectedVideo(null);
+    setCurrentVideo(null);
+    setIsFromLibrary(false);
   };
 
   // Render main screen content
@@ -306,34 +317,41 @@ export default function App() {
     }
 
     // Video playback screen
-    if (processedVideo) {
+    if (currentVideo) {
       return (
         <View style={styles.container}>
           <View style={styles.videoContainer}>
             <Video
-              source={{ uri: processedVideo }}
+              source={{ uri: currentVideo }}
               style={styles.video}
               useNativeControls
               resizeMode={ResizeMode.CONTAIN}
-              shouldPlay={true}
-              isLooping={true}
+              shouldPlay
+              isLooping
             />
           </View>
+
           <View style={styles.actionButtons}>
             <TouchableOpacity style={styles.saveButton} onPress={saveVideo}>
-              <Text style={styles.buttonText}>SAVE TO CAMERA</Text>
+              <Text style={styles.buttonText}>SAVE TO GALLERY</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.libraryButton}
-              onPress={saveVideoToLibrary}
-            >
-              <Text style={styles.buttonText}>SAVE TO LIBRARY</Text>
-            </TouchableOpacity>
+
+            {!isFromLibrary && (
+              <TouchableOpacity
+                style={styles.libraryButton}
+                onPress={saveVideoToLibrary}
+              >
+                <Text style={styles.buttonText}>SAVE TO LIBRARY</Text>
+              </TouchableOpacity>
+            )}
+
             <TouchableOpacity
               style={styles.discardButton}
-              onPress={discardVideo}
+              onPress={() => {
+                discardVideo();
+              }}
             >
-              <Text style={styles.buttonText}>DISCARD</Text>
+              <Text style={styles.buttonText}>EXIT</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -345,6 +363,37 @@ export default function App() {
 
   // Render library screen
   const renderLibraryScreen = () => {
+    if (currentVideo && isFromLibrary) {
+      return (
+        <View style={styles.container}>
+          <View style={styles.videoContainer}>
+            <Video
+              source={{ uri: currentVideo }}
+              style={styles.video}
+              useNativeControls
+              resizeMode={ResizeMode.CONTAIN}
+              shouldPlay
+              isLooping
+            />
+          </View>
+
+          <View style={styles.actionButtons}>
+            <TouchableOpacity style={styles.saveButton} onPress={saveVideo}>
+              <Text style={styles.buttonText}>SAVE TO GALLERY</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.discardButton}
+              onPress={() => {
+                discardVideo();
+              }}
+            >
+              <Text style={styles.buttonText}>EXIT</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
         <Text style={styles.libraryTitle}>
@@ -387,9 +436,8 @@ export default function App() {
                   <TouchableOpacity
                     style={styles.playButton}
                     onPress={() => {
-                      // Set the library video as processed video to view on main screen
-                      setProcessedVideo(video.localUri);
-                      setCurrentScreen("main");
+                      // Set the library video as processed video to view on library screen
+                      playVideo(video.localUri, true);
                     }}
                   >
                     <Text style={styles.playButtonText}>PLAY</Text>
@@ -499,7 +547,7 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: "column",
     position: "absolute",
-    bottom: 100,
+    bottom: 25,
     gap: 15,
     alignItems: "center",
   },
@@ -647,12 +695,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
     letterSpacing: 0.5,
+    textAlign: "center",
   },
   deleteButton: {
     backgroundColor: "#f44336",
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 15,
+    textAlign: "center",
   },
   deleteButtonText: {
     color: "#fff",

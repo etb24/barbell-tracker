@@ -22,16 +22,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# s3 configuration
+# S3 and model config
 BUCKET_NAME = "barbell-tracker-videos"
 s3_client = boto3.client('s3')
-
-# Initialize the tracker with the model path
 tracker = BarbellPathTracker('path/to/your/model.pt')
 
 @app.get("/")
 def read_root():
-    return {"message": "Barbell Tracker API with S3"}
+    return {"message": "Barbell Tracker API"}
 
 @app.get("/health")
 def health_check():
@@ -102,29 +100,7 @@ async def process_video(file: UploadFile = File(...)):
             if os.path.exists(temp_file):
                 os.remove(temp_file)
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
-    
-@app.get("/download/{s3_key:path}")
-async def get_download_url(s3_key: str):
-    """Genereate a presigned download URL for an S3 object"""
-
-    try:
-        # Check if object exists
-        s3_client.head_object(Bucket=BUCKET_NAME, Key=s3_key)
-
-        # Generate presigned URL
-        download_url = s3_client.generate_presigned_url(
-            'get_object',
-            Params={'Bucket': BUCKET_NAME, 'Key': s3_key},
-            ExpiresIn=3600  # URL valid for 1 hour
-        )
-        return {"download_url": download_url}
-    except ClientError as e:
-        if e.response['Error']['Code'] == '404':
-            raise HTTPException(status_code=404, detail="File not found")
-        else:
-            raise HTTPException(status_code=500, detail=f"Error accessing video")
         
-    
 @app.get("/list")
 async def list_videos():
     """List all processed videos in S3 bucket (testing purposes)"""
