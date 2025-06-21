@@ -1,9 +1,12 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import os
 import sys
-import shutil
+import tempfile
+import boto3
+import uuid
+from botocore.exceptions import ClientError
 from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -19,42 +22,127 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-tracker = BarbellPathTracker('PATH/TO/YOUR/MODEL')
+# s3 configuration
+BUCKET_NAME = "barbell-tracker-videos"
+s3_client = boto3.client('s3')
+
+# Initialize the tracker with the model path
+tracker = BarbellPathTracker('path/to/your/model.pt')
+
+@app.get("/")
+def read_root():
+    return {"message": "Barbell Tracker API with S3"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
 
 @app.post("/process")
 async def process_video(file: UploadFile = File(...)):
-    # Create temp directories
-    os.makedirs("temp", exist_ok=True)
-    os.makedirs("processed", exist_ok=True)
-    
-    # Generate unique filename
+    """Process video and return S3 download URL"""
+
+    # Genereate a unique identifiers
+    job_id = str(uuid.uuid4())
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    # S3 key for processed video
+    processed_key = f"processed/{job_id}/output_{timestamp}_{file.filename}"
+
+
+    # Create temp directories
+    temp_dir = tempfile.gettempdir()  # Gets system temp directory
+    local_input = os.path.join(temp_dir, f"{job_id}_input.mp4")
+    local_output = os.path.join(temp_dir, f"{job_id}_output.mp4")
+
+
+    # Generate unique filename
     input_filename = f"temp/input_{timestamp}_{file.filename}"
     output_filename = f"processed/output_{timestamp}_{file.filename}"
     
     try:
-        # Save uploaded file
-        with open(input_filename, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        
-        # Process video
-        result = tracker.process_video_headless(input_filename, output_filename)
-        
-        # Return processed video
-        if os.path.exists(output_filename):
-            return FileResponse(
-                output_filename,
-                media_type="video/mp4",
-                filename=f"tracked_{file.filename}"
-            )
-        else:
-            return {"error": "Processing failed"}
-            
-    finally:
-        # Cleanup temp file
-        if os.path.exists(input_filename):
-            os.remove(input_filename)
+        with open(local_input, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
 
-@app.get("/")
-def read_root():
-    return {"message": "Barbell Tracker API"}
+        result = tracker.process_video_headless(local_input, local_output)
+
+        if not result.get("success"):
+            raise HTTPException(status_code=500, detail="Video processing failed")
+        
+        # Upload processed video to S3
+        s3_client.upload_file(local_output, BUCKET_NAME, processed_key)
+
+        # Generate S3 download URL
+        download_url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': BUCKET_NAME, 'Key': processed_key},
+            ExpiresIn=3600  # URL valid for 1 hour
+        )
+
+        # Clean up local files
+        if os.path.exists(local_input):
+            os.remove(local_input)
+        if os.path.exists(local_output):
+            os.remove(local_output) 
+        
+        return {
+            "success": True,
+            "message": "Video processed successfully",
+            "job_id": job_id,
+            "download_url": download_url,
+            "s3_key": processed_key,
+            "video_info": result.get("video", {})
+        }
+    except ClientError as e:
+        raise HTTPException(status_code=500, detail=f"S3 error: {e.response['Error']['Message']}")
+    
+    except Exception as e:
+        # Clean up local files in case of error
+        for temp_file in [local_input, local_output]:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+        raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
+    
+@app.get("/download/{s3_key:path}")
+async def get_download_url(s3_key: str):
+    """Genereate a presigned download URL for an S3 object"""
+
+    try:
+        # Check if object exists
+        s3_client.head_object(Bucket=BUCKET_NAME, Key=s3_key)
+
+        # Generate presigned URL
+        download_url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': BUCKET_NAME, 'Key': s3_key},
+            ExpiresIn=3600  # URL valid for 1 hour
+        )
+        return {"download_url": download_url}
+    except ClientError as e:
+        if e.response['Error']['Code'] == '404':
+            raise HTTPException(status_code=404, detail="File not found")
+        else:
+            raise HTTPException(status_code=500, detail=f"Error accessing video")
+        
+    
+@app.get("/list")
+async def list_videos():
+    """List all processed videos in S3 bucket (testing purposes)"""
+    try:
+        response = s3_client.list_objects_v2(Bucket=BUCKET_NAME, Prefix='processed/')
+        if 'Contents' not in response:
+            return {"videos": []}
+
+        videos = []
+        for obj in response['Contents']:
+            videos.append({
+                "key": obj['Key'],
+                "size": obj['Size'],
+                "last_modified": obj['LastModified'].isoformat(),
+                "download_url": f"/download/{obj['Key']}"
+            })
+        return {"videos": videos}
+    
+    
+    except ClientError as e:
+        raise HTTPException(status_code=500, detail=f"Error listing videos: {e.response['Error']['Message']}")
