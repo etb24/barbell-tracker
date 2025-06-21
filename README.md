@@ -15,7 +15,7 @@ As a former competitive athlete and fitness enthusiast with past injuries I've b
 - **Path Visualization**: Draws a color-coded trail showing the barbell's movement path
 - **Mobile App**: React Native app with video library and cloud storage
 - **Cloud Processing**: FastAPI REST API backend with AWS S3 integration
-- **Video Management**: Save to personal library or camera roll
+- **Video Management**: Save to personal library in app or camera roll
 
 ## Future Enhancements
 
