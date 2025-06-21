@@ -7,7 +7,7 @@ As a former competitive athlete and fitness enthusiast with past injuries I've b
 ## Tech Stack
 
 - **Frontend**: React Native, Expo, TypeScript
-- **BackEnd**: AWS, FastAPI, Python
+- **Backend**: AWS, FastAPI, Python
 
 ## Features
 
