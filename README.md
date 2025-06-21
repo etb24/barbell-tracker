@@ -4,17 +4,21 @@ As a former competitive athlete and fitness enthusiast with past injuries I've b
 
 <img src="demo.gif" width="50%">
 
+## Tech Stack
+
+- **Frontend**: React Native, Expo, TypeScript
+- **BackEnd**: AWS, FastAPI, Python
+
 ## Features
 
-- **Real-time Barbell Detection**: Uses YOLOv11 to detect and track barbells in video
+- **Real-time Barbell Detection**: Uses computer vision to detect and track barbells in video
 - **Path Visualization**: Draws a color-coded trail showing the barbell's movement path
-- **Mobile Optimized**: Processes videos efficiently for mobile devices
-- **Multiple Interfaces**: Desktop GUI, REST API, and mobile app support
-- **Video Processing**: Handles various video formats
+- **Mobile App**: React Native app with video library and cloud storage
+- **Cloud Processing**: FastAPI REST API backend with AWS S3 integration
+- **Video Management**: Save to personal library or camera roll
 
 ## Future Enhancements
 
-- [ ] Cloud deployment
 - [ ] Real-time streaming support
 - [ ] Rep counting and velocity tracking
 - [ ] Dashboard for analytics
