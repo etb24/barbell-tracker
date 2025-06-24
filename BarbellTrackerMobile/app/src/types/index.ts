@@ -5,7 +5,6 @@ export interface SavedVideo {
   title: string;
   date: string;
   localUri: string;
-  cloudSynced?: boolean; // for cloud backup later
 }
 
 export type Screen = "main" | "library";

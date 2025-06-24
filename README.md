@@ -13,13 +13,14 @@ As a former competitive athlete and fitness enthusiast with past injuries I've b
 
 - **Real-time Barbell Detection**: Uses computer vision to detect and track barbells in video
 - **Path Visualization**: Draws a color-coded trail showing the barbell's movement path
-- **Mobile App**: React Native app with video library
-- **Cloud Processing**: FastAPI REST API backend with AWS S3 integration
-- **Video Management**: Save to personal library in app or camera roll
+- **Mobile App**: Mobile app built in React Native with Expo
+- **Processing**: FastAPI REST API backend integrated with AWS S3 for file storage
+- **Video Management**: Save videos to personal library in app or camera roll
 
 ## Future Enhancements
 
-- [ ] Database implementation for library storage
+- [ ] Containerized deployment on AWS EC2
+- [ ] Cloud implementation for library storage
 - [ ] Real-time streaming support
 - [ ] Rep counting and velocity tracking
 - [ ] Dashboard for analytics
