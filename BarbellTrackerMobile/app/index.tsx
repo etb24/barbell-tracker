@@ -14,7 +14,7 @@ import { videoService } from "./src/services/videoService";
 import { storageService } from "./src/services/storageService";
 
 // Types and styles
-import { SavedVideo, Screen } from "./src/types/";
+import { SavedVideo, Screen } from "./src/types";
 import { sharedStyles } from "./src/styles";
 
 export default function App() {
