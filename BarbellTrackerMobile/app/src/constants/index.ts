@@ -1,7 +1,6 @@
 // src/constants/index.ts
 
-// UPDATE THIS WITH YOUR COMPUTER'S IP ADDRESS!
-export const API_URL = "http://YOUR.IP.ADDRESS:8000";
+export const API_URL = "http://ec2-52-91-212-5.compute-1.amazonaws.com";
 
 // Storage keys
 export const STORAGE_KEYS = {
