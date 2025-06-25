@@ -26,8 +26,6 @@ As a former competitive athlete and fitness enthusiast with past injuries I've b
 
 ## Key Learnings
 
-Technical Skills Gained
-
 **Computer Vision & AI**
 
 YOLO Object Detection: Implemented real-time barbell tracking using pre-trained models
