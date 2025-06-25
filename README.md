@@ -28,14 +28,14 @@ As a former competitive athlete and fitness enthusiast with past injuries I've b
 
 **Computer Vision & AI**
 
-- YOLO Object Detection: Implemented real-time barbell tracking using pre-trained models
+- Object Detection: Implemented real-time barbell tracking using custom pre-trained models
 - OpenCV Integration: Learned video processing, frame manipulation, and coordinate systems
 - Model Optimization: Balanced accuracy vs performance for mobile video processing
 
 **Full-Stack Development**
 
-- FastAPI Backend: Built async API endpoints with file upload handling and error management
-- React Native/Expo with TypeScript: Developed cross-platform mobile app
+- FastAPI Backend: Built API endpoints with file upload handling and error management
+- React Native with TypeScript: Developed cross-platform mobile app
 - State Management: Handled video processing states, upload progress, and error handling across frontend/backend
 
 **Cloud Architecture & DevOps**
