@@ -25,7 +25,7 @@ app.add_middleware(
 # S3 and model config
 BUCKET_NAME = "barbell-tracker-videos"
 s3_client = boto3.client('s3')
-tracker = BarbellPathTracker('path/to/your/model.pt')
+tracker = BarbellPathTracker('models/barbell-tracking-model.pt')
 
 @app.get("/")
 def read_root():
