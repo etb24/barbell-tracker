@@ -35,7 +35,7 @@ As a former competitive athlete and fitness enthusiast with past injuries I've b
 **Full-Stack Development**
 
 - FastAPI Backend: Built async API endpoints with file upload handling and error management
-- React Native/Expo with TypeScript: Developed cross-platform mobile app with camera integration and real-time feedback
+- React Native/Expo with TypeScript: Developed cross-platform mobile app
 - State Management: Handled video processing states, upload progress, and error handling across frontend/backend
 
 **Cloud Architecture & DevOps**
@@ -74,8 +74,6 @@ As a former competitive athlete and fitness enthusiast with past injuries I've b
 
 - Docker Containerization: For more consistent deployment across environments
 - Database Integration: Add user accounts and video history storage
-- Real-time Features: WebSocket integration for live processing updates
-- Performance Optimization: GPU acceleration for faster AI inference
 
 ## Impact & Results
 
