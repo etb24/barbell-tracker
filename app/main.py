@@ -39,21 +39,21 @@ def health_check():
 async def process_video(file: UploadFile = File(...)):
     """Process video and return S3 download URL"""
 
-    # Genereate a unique identifiers
+    #genereate a unique identifiers
     job_id = str(uuid.uuid4())
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # S3 key for processed video
+    #S3 key for processed video
     processed_key = f"processed/{job_id}/output_{timestamp}_{file.filename}"
 
 
-    # Create temp directories
+    #create temp directories
     temp_dir = tempfile.gettempdir()  # Gets system temp directory
     local_input = os.path.join(temp_dir, f"{job_id}_input.mp4")
     local_output = os.path.join(temp_dir, f"{job_id}_output.mp4")
 
 
-    # Generate unique filename
+    #generate unique filename
     input_filename = f"temp/input_{timestamp}_{file.filename}"
     output_filename = f"processed/output_{timestamp}_{file.filename}"
     
@@ -67,17 +67,17 @@ async def process_video(file: UploadFile = File(...)):
         if not result.get("success"):
             raise HTTPException(status_code=500, detail="Video processing failed")
         
-        # Upload processed video to S3
+        #upload processed video to S3
         s3_client.upload_file(local_output, BUCKET_NAME, processed_key)
 
-        # Generate S3 download URL
+        #generate S3 download URL
         download_url = s3_client.generate_presigned_url(
             'get_object',
             Params={'Bucket': BUCKET_NAME, 'Key': processed_key},
             ExpiresIn=3600  # URL valid for 1 hour
         )
 
-        # Clean up local files
+        #clean up local files
         if os.path.exists(local_input):
             os.remove(local_input)
         if os.path.exists(local_output):
@@ -95,7 +95,7 @@ async def process_video(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"S3 error: {e.response['Error']['Message']}")
     
     except Exception as e:
-        # Clean up local files in case of error
+        #clean up local files in case of error
         for temp_file in [local_input, local_output]:
             if os.path.exists(temp_file):
                 os.remove(temp_file)

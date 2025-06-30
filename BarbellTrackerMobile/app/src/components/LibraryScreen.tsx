@@ -12,12 +12,12 @@ import { SavedVideo } from "../types";
 import { sharedStyles, colors } from "../styles";
 
 interface LibraryScreenProps {
-  // State
+  //state
   savedVideos: SavedVideo[];
   currentVideo: string | null;
   isFromLibrary: boolean;
 
-  // Actions
+  //actions
   onPlayVideo: (uri: string, fromLibrary: boolean) => void;
   onDeleteVideo: (videoId: string) => void;
   onSaveToGallery: () => void;
@@ -33,7 +33,7 @@ export const LibraryScreen: React.FC<LibraryScreenProps> = ({
   onSaveToGallery,
   onDiscardVideo,
 }) => {
-  // Video playback screen (when playing from library)
+  //video playback screen (when playing from library)
   if (currentVideo && isFromLibrary) {
     return (
       <VideoPlayer
@@ -45,7 +45,7 @@ export const LibraryScreen: React.FC<LibraryScreenProps> = ({
     );
   }
 
-  // Main library screen
+  //main library screen
   return (
     <View style={sharedStyles.container}>
       <Text style={[sharedStyles.title, styles.libraryTitle]}>
@@ -80,7 +80,7 @@ export const LibraryScreen: React.FC<LibraryScreenProps> = ({
   );
 };
 
-// Video item component
+//video item component
 interface VideoItemProps {
   video: SavedVideo;
   onPlay: () => void;

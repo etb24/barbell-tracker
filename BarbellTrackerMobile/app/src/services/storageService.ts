@@ -3,7 +3,7 @@ import { SavedVideo } from "../types";
 import { STORAGE_KEYS } from "../constants";
 
 export const storageService = {
-  // Load videos from AsyncStorage
+  //load videos from AsyncStorage
   loadSavedVideos: async (): Promise<SavedVideo[]> => {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEYS.SAVED_VIDEOS);
@@ -17,7 +17,7 @@ export const storageService = {
     }
   },
 
-  // Save videos to AsyncStorage
+  //save videos to AsyncStorage
   saveVideosToStorage: async (videos: SavedVideo[]): Promise<void> => {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.SAVED_VIDEOS, JSON.stringify(videos));
@@ -27,14 +27,14 @@ export const storageService = {
     }
   },
 
-  // Add a video to storage
+  //add a video to storage
   addVideoToStorage: async (video: SavedVideo, existingVideos: SavedVideo[]): Promise<SavedVideo[]> => {
     const updatedVideos = [video, ...existingVideos];
     await storageService.saveVideosToStorage(updatedVideos);
     return updatedVideos;
   },
 
-  // Remove a video from storage
+  //remove a video from storage
   removeVideoFromStorage: async (videoId: string, existingVideos: SavedVideo[]): Promise<SavedVideo[]> => {
     const updatedVideos = existingVideos.filter((v) => v.id !== videoId);
     await storageService.saveVideosToStorage(updatedVideos);

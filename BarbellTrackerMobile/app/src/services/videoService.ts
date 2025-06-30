@@ -5,7 +5,7 @@ import { Alert } from "react-native";
 import { API_URL, ALBUM_NAME } from "../constants";
 
 export const videoService = {
-  // Test API connection
+  //test API connection (testing purposes)
   testConnection: async (): Promise<void> => {
     try {
       console.log("Testing connection to:", API_URL);
@@ -18,7 +18,7 @@ export const videoService = {
     }
   },
 
-  // Upload video from library
+  //upload video from library
   uploadVideo: async (): Promise<string | null> => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -41,7 +41,7 @@ export const videoService = {
     return null;
   },
 
-  // Process video through API
+  //process video through API
   processVideo: async (videoUri: string): Promise<string> => {
     const formData = new FormData();
     formData.append("file", {
@@ -60,10 +60,10 @@ export const videoService = {
       throw new Error(`Server returned ${response.status}: ${errorText}`);
     }
 
-    // Get the raw response text
+    //get the raw response text
     const responseText = await response.text();
 
-    // Try to parse JSON
+    //try to parse JSON
     let result;
     try {
       result = JSON.parse(responseText);
@@ -80,7 +80,7 @@ export const videoService = {
       }
       const blob = await videoResponse.blob();
 
-      // Convert blob to base64 and save locally
+      //convert blob to base64 and save locally
       return new Promise((resolve, reject) => {
         const fileReaderInstance = new FileReader();
         
@@ -121,7 +121,7 @@ export const videoService = {
     }
   },
 
-  // Save video to device photo library
+  //save video to device photo library
   saveVideoToGallery: async (videoUri: string): Promise<void> => {
     const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status !== "granted") {

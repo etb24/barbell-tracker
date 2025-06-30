@@ -10,14 +10,14 @@ import { VideoPlayer } from "./VideoPlayer";
 import { sharedStyles, colors } from "../styles";
 
 interface MainScreenProps {
-  // State
+  //state
   selectedVideo: string | null;
   processedVideo: string | null;
   isProcessing: boolean;
   currentVideo: string | null;
   isFromLibrary: boolean;
 
-  // Actions
+  //actions
   onUploadVideo: () => void;
   onTestConnection: () => void;
   onSaveToGallery: () => void;
@@ -37,7 +37,7 @@ export const MainScreen: React.FC<MainScreenProps> = ({
   onSaveToLibrary,
   onDiscardVideo,
 }) => {
-  // Initial screen - Upload button
+  //initial screen - upload button
   if (!selectedVideo && !processedVideo && !isProcessing) {
     return (
       <View style={sharedStyles.container}>
@@ -52,7 +52,7 @@ export const MainScreen: React.FC<MainScreenProps> = ({
     );
   }
 
-  // Processing screen
+  //processing screen
   if (isProcessing) {
     return (
       <View style={sharedStyles.container}>
@@ -62,7 +62,7 @@ export const MainScreen: React.FC<MainScreenProps> = ({
     );
   }
 
-  // Video playback screen
+  //video playback screen
   if (currentVideo) {
     return (
       <VideoPlayer

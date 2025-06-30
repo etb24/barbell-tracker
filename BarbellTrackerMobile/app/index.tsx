@@ -1,50 +1,40 @@
 // index.tsx
-
 import React, { useState, useEffect } from "react";
 import { SafeAreaView, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
-
-// Components
 import { MainScreen } from "./src/components/MainScreen";
 import { LibraryScreen } from "./src/components/LibraryScreen";
 import { TabBar } from "./src/components/TabBar";
-
-// Services
 import { videoService } from "./src/services/videoService";
 import { storageService } from "./src/services/storageService";
-
-// Types and styles
 import { SavedVideo, Screen } from "./src/types";
 import { sharedStyles } from "./src/styles";
 
 export default function App() {
-  // Navigation state
+  //states
   const [currentScreen, setCurrentScreen] = useState<Screen>("main");
 
-  // Video processing state
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [processedVideo, setProcessedVideo] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Video playback state
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
   const [isFromLibrary, setIsFromLibrary] = useState(false);
 
-  // Library state
   const [savedVideos, setSavedVideos] = useState<SavedVideo[]>([]);
 
-  // Load saved videos when app starts
+  //load library videos on start
   useEffect(() => {
     loadSavedVideos();
   }, []);
 
-  // Load videos from storage
+  //load videos from storage
   const loadSavedVideos = async () => {
     const videos = await storageService.loadSavedVideos();
     setSavedVideos(videos);
   };
 
-  // Handle video upload
+  //handle video upload
   const handleUploadVideo = async () => {
     const videoUri = await videoService.uploadVideo();
     if (videoUri) {
@@ -53,7 +43,7 @@ export default function App() {
     }
   };
 
-  // Handle video processing
+  //handle video processing
   const handleProcessVideo = async (videoUri: string) => {
     setIsProcessing(true);
 
@@ -78,7 +68,7 @@ export default function App() {
     }
   };
 
-  // Handle saving video to device gallery
+  //handle saving video to device gallery
   const handleSaveToGallery = async () => {
     if (!currentVideo) return;
 
@@ -86,11 +76,11 @@ export default function App() {
       await videoService.saveVideoToGallery(currentVideo);
       handleDiscardVideo();
     } catch (error) {
-      // Error is handled in the service
+      //error is handled in the service
     }
   };
 
-  // Handle saving video to app library
+  //handle saving video to app library
   const handleSaveToLibrary = async () => {
     if (!processedVideo) {
       Alert.alert("Error", "No processed video to save");
@@ -120,7 +110,7 @@ export default function App() {
     }
   };
 
-  // Handle video deletion from library
+  //handle video deletion from library
   const handleDeleteVideo = async (videoId: string) => {
     Alert.alert(
       "Delete Video",
@@ -146,13 +136,13 @@ export default function App() {
     );
   };
 
-  // Handle video playback
+  //handle video playback
   const handlePlayVideo = (uri: string, fromLibrary = false) => {
     setCurrentVideo(uri);
     setIsFromLibrary(fromLibrary);
   };
 
-  // Handle discarding current video
+  //handle discarding current video
   const handleDiscardVideo = () => {
     setProcessedVideo(null);
     setSelectedVideo(null);
@@ -164,7 +154,7 @@ export default function App() {
     <SafeAreaView style={sharedStyles.safeArea}>
       <StatusBar style="light" />
 
-      {/* Screen Content */}
+      {/* screen content */}
       {currentScreen === "main" ? (
         <MainScreen
           selectedVideo={selectedVideo}
@@ -190,7 +180,7 @@ export default function App() {
         />
       )}
 
-      {/* Bottom Tab Bar */}
+      {/* bottom tab bar */}
       <TabBar
         currentScreen={currentScreen}
         onScreenChange={setCurrentScreen}
