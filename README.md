@@ -77,6 +77,6 @@ As a former competitive athlete and fitness enthusiast with past injuries I've b
 
 ## Impact & Results
 
-- End-to-End Product: Successfully built and deployed a complete AI application accessible worldwide
+- End-to-End Product: Successfully built and deployed a complete AI application
 - Real-World Usage: App processes actual workout videos and provides meaningful feedback
 - Production Ready: Handles real users, real data, and real-world network conditions
