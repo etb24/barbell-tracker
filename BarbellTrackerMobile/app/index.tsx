@@ -1,4 +1,4 @@
-// index.tsx
+//index.tsx
 import React, { useState, useEffect } from "react";
 import { SafeAreaView, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -181,11 +181,12 @@ export default function App() {
       )}
 
       {/* bottom tab bar */}
-      <TabBar
-        currentScreen={currentScreen}
-        onScreenChange={setCurrentScreen}
-        libraryCount={savedVideos.length}
-      />
+      {!currentVideo && !isProcessing && (
+        <TabBar
+          currentScreen={currentScreen}
+          onScreenChange={setCurrentScreen}
+        />
+      )}
     </SafeAreaView>
   );
 }
